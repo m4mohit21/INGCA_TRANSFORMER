@@ -1,0 +1,27 @@
+# Ignore datasets and large data files
+data/
+mY_OWN_DATASET/
+Sample_dataset/
+diBCO_OVER_MY_DATASET/
+gt/
+
+# Ignore specific files and directories
+rename.py
+weights_old/
+visbase_256_16/
+9_IMGES_MODEL/
+Experiment2/
+cleaned_mtp.sh
+
+# Ignore output files
+output.txt
+out.txt
+*.out
+slurm-*.out
+# Ignore __pycache__ directories
+__pycache__/
+# Ignore any temporary or result-related text files
+trail_1.txt
+
+# Ignore any directories starting with 'visinference_'
+visinference_*/
