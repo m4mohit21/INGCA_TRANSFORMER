@@ -1,80 +1,183 @@
-# 🥇SOTA Document Image Enhancement - A Layer-Wise Tokens-to-Token Transformer Network for Improved Historical Document Image Enhancement
-The official PyTorch code for the project [A Layer-Wise Tokens-to-Token Transformer Network for Improved Historical Document Image Enhancement](https://arxiv.org/abs/2312.03946).
+Here's a more structured and comprehensive README file based on your project directory structure and the `.gitignore` file, similar to the example you provided:
 
-## Description
-We propose to employ a Tokens-to-Token Transformer network for document image enhancement, a novel encoder-decoder architecture based on a tokens-to-token vision transformer.
+---
 
-![alt text](Architecture.png?raw=true)
+# 🥇 **Document Image Binarization with T2T-BinFormer**
 
-![alt text](Result_Comparison.png?raw=true)
+This repository contains the implementation of the modified **Tokens-to-Token Transformer (T2T-BinFormer)** model for document image binarization tasks. This version introduces several improvements aimed at better processing, faster inference, and scalability for datasets like DIBCO and custom datasets.
 
-## Step 1 - Download Code
-Clone the repository to your desired location:
-```bash
-git clone https://github.com/RisabBiswas/T2T-BinFormer
-cd T2T-BinFormer
-```
-## Step 2 - Process Data
-### Data Path
-The research and experiments are conducted on the DIBCO and H-DIBCO datasets. Find the dataset here - [Link](https://drive.google.com/drive/folders/1u8vDqRlxWe5GvRPr6cD-C7GeL9MSqBsX?usp=drive_link). After downloading, extract the folder named DIBCOSETS and place it in your desired data path. 
-Means:  /YOUR_DATA_PATH/DIBCOSETS/
+## 📜 **Project Overview**
 
-### Additional Data Path
-* PALM Dataset - [Link](https://drive.google.com/drive/folders/1u8vDqRlxWe5GvRPr6cD-C7GeL9MSqBsX?usp=drive_link)
-* Persian Heritage Image Binarization Dataset - [Link](https://drive.google.com/drive/folders/1CqP_2t7jBb9mqe4hjLJ_JDwd8vEUkyM9?usp=drive_link)
-* Degraded Maps - [Link](https://drive.google.com/drive/folders/1Li2x0pHfkmwx0kVXoj4kJ7DQuaZt83GO?usp=sharing)
+The **T2T-BinFormer** model is designed to perform document image binarization using a Transformer-based approach. The model splits input images into patches and processes them through an encoder-decoder architecture. The key focus of this repository is on improving the model’s performance on document image binarization, optimizing patch-based processing, and refining the inference pipeline to handle large datasets efficiently.
 
-### Data Splitting
-Specify the data path, split size, validation, and testing sets to prepare your data. In this example, we set the split size as (256 X 256), the validation set as 2016, and the testing set as 2018 while running the process_dibco.py file.
- 
-```bash
-python process_dibco.py --data_path /YOUR_DATA_PATH/ --split_size 256 --testing_dataset 2018 --validation_dataset 2016
-```
+## 🛠️ **Requirements**
 
-## Using T2T-BinFormer
-### Step 3 - Training
-For training, specify the desired settings (batch_size, patch_size, model_size, split_size, and training epochs) when running the file train.py. For example, for a base model with a patch size of (16 X 16) and a batch size of 32, we use the following command:
+To replicate the environment used for this project, you can either create a conda environment or manually install the dependencies. Follow the steps below to set up your environment.
+
+### ⚙️ **Conda Environment Setup**
+
+To set up a new environment for this project using Conda:
 
 ```bash
-python train.py --data_path /YOUR_DATA_PATH/ --batch_size 32 --vit_model_size base --vit_patch_size 16 --epochs 151 --split_size 256 --validation_dataset 2016
+# Create a new environment with Python 3.8
+conda create --name dibco_image_binarization python=3.8
+
+# Activate the environment
+conda activate dibco_image_binarization
+
+# Install the dependencies from requirements.txt
+pip install -r requirements.txt
 ```
-You will get visualization results from the validation dataset on each epoch in a folder named vis+"YOUR_EXPERIMENT_SETTINGS" (it will be created). In the previous case, it will be named visbase_256_16. Also, the best weights will be saved in the folder named "weights".
- 
-### Step 4 - Testing on a DIBCO dataset
-To test the trained model on a specific DIBCO dataset (should match the one specified in Section Process Data, if not, run process_dibco.py again). Use your own trained model weights. Then, run the below command. Here, I test on H-DIBCO 2017, using the base model with a 16X16 patch size and a batch size of 16. The binarized images will be in the folder ./vis+"YOUR_CONFIGS_HERE"/epoch_testing/ 
+
+### 🔑 **Key Libraries**
+
+- **Python**: 3.8
+- **PyTorch**: 1.12.0
+- **NumPy**: 1.21.2
+- **Matplotlib**: 3.4.3
+- **OpenCV**: 4.5.3
+- **Pillow (PIL)**: 8.3.2
+- **tqdm**: 4.62.3
+
+Other dependencies can be found in the `requirements.txt` file.
+
+---
+
+## 📁 **Project Structure**
+
+```plaintext
+.
+├── data/                        # Data directory containing training and testing images
+├── models/                      # Directory for model checkpoints and saved weights
+├── scripts/                     # Python scripts for data preprocessing, training, inference, etc.
+│   ├── process_dibco.py         # Script for preprocessing images (splitting into patches)
+│   ├── train.py                 # Script for training the model
+│   ├── inference.py             # Script for inference on test images
+│   ├── visualize.py             # Script for visualizing binarized image patches
+│   └── full_img.py              # Script for reconstructing full images from patches
+├── results/                     # Directory to store output and visualization results
+├── mtp.sh                       # SLURM job script for running the full pipeline
+├── requirements.txt             # Required libraries and dependencies
+└── README1.md                    # Project description and setup instructions
+```
+
+---
+
+## 🚀 **Running the Project**
+
+### Step 1: **Preprocessing**
+
+Before training, you need to split the dataset into patches for training and validation. Use the following command to preprocess your DIBCO dataset:
+
 ```bash
-python test.py --data_path /YOUR_DATA_PATH/ --model_weights_path  /THE_MODEL_WEIGHTS_PATH/  --batch_size 16 --vit_model_size base --vit_patch_size 16 --split_size 256 --testing_dataset 2017
+python process_dibco.py --data_path /scratch/m23csa015/DIBCOSETS_INGCA/DIBCOSETS_ingca/ --data_root /scratch/m23csa015/DIBCOSETS_INGCA/ --split_size 256 --testing_dataset ingca_testing --validation_dataset 2016
 ```
 
-## Resuts
-The results of our model can be found [Here](https://drive.google.com/drive/folders/1LojmH8AfAumZDWoQOLRikWXpYYgfF6TL?usp=sharing).
+### Step 2: **Training**
 
-## Acknowledgement
-Our project has adapted and borrowed the code structure from [DocEnTr](https://github.com/dali92002/DocEnTR/tree/main). We are thankful to the authors! Additionally, we really appreciate the great work done on [vit_pytorch](https://github.com/lucidrains/vit-pytorch/tree/main) by [Phil Wang](https://github.com/lucidrains).
+To train the model using preprocessed patches, run the `train.py` script. Model weights will be saved after training:
 
-## Authors
-- [Risab Biswas](https://www.linkedin.com/in/risab-biswas/)
-- [Swalpa Kumar Roy](https://swalpa.github.io/)
-- [Umapada Pal](https://www.isical.ac.in/~umapada/)
-
-
-## Citation
-
-If you use the T2T-BinFormer code in your research, we would appreciate a citation to the original paper:
-```
-  @misc{biswas2023layerwise,
-        title={A Layer-Wise Tokens-to-Token Transformer Network for Improved Historical Document Image Enhancement}, 
-        author={Risab Biswas and Swalpa Kumar Roy and Umapada Pal},
-        year={2023},
-        eprint={2312.03946},
-        archivePrefix={arXiv},
-        primaryClass={cs.CV}
-  }
+```bash
+python train.py --data_path /scratch/m23csa015/DIBCOSETS_INGCA/DIBCOSETS_ingca/ --batch_size 32 --vit_model_size base --vit_patch_size 16 --epochs 1 --split_size 256 --validation_dataset 2016
 ```
 
-## Contact 
-If you have any questions, please feel free to reach out to <a href="mailto:risabbiswas19@gmail.com" target="_blank">Risab Biswas</a>.
+### Step 3: **Inference**
 
+For predicting the binarization results on test images, use the `inference.py` script to split test images into patches and predict each patch's result:
 
-## Conclusion
-We really appreciate your interest in our research. The code should not have any bugs, but if there are any, we are really sorry about that. Do let us know in the issues section, and we will fix it ASAP! Cheers! 
+```bash
+python inference.py --data_path /scratch/m23csa015/INGCA/INGCA_IMAGES/ --data_root /scratch/m23csa015/INGCA/ --model_weights_path /csehome/m23csa015/T2T-BinFormer/9_ingca_model/model_116_2016base_256_16.pt --batch_size 16 --vit_model_size base --vit_patch_size 16 --split_size 256 --testing_dataset raw_images
+```
+
+### Step 4: **Visualization**
+
+To visualize the predicted binarized patches, run the `visualize.py` script:
+
+```bash
+python visualize.py --data_path /scratch/m23csa015/INGCA/INGCA_IMAGES/ --data_root /scratch/m23csa015/INGCA/ --model_weights_path /csehome/m23csa015/T2T-BinFormer/weights_208imgs/best-model_16_2016base_256_16.pt --batch_size 16 --vit_patch_size 16 --split_size 256 --testing_dataset raw_images
+```
+
+### Step 5: **Reconstruction**
+
+Once the patches are processed, you can reconstruct them into full-sized images using the `full_img.py` script:
+
+```bash
+python full_img.py --data_path /scratch/m23csa015/INGCA/INGCA_IMAGES/ --data_root /scratch/m23csa015/INGCA/ --model_weights_path /csehome/m23csa015/T2T-BinFormer/weights_208imgs/best-model_16_2016base_256_16.pt --batch_size 16 --vit_model_size base --vit_patch_size 16 --split_size 256 --testing_dataset raw_images
+```
+
+---
+
+## 🧾 **SLURM Job Script**
+
+The entire process can also be automated using a SLURM job script. Below is an example of the `mtp.sh` script for running preprocessing, training, and inference on a SLURM-based cluster:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=trial
+#SBATCH --partition=medium
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+
+module load conda/conda
+source activate
+conda activate mtp
+
+# Preprocess dataset into patches
+python process_dibco.py --data_path /scratch/m23csa015/DIBCOSETS_INGCA/DIBCOSETS_ingca/ --data_root /scratch/m23csa015/DIBCOSETS_INGCA/ --split_size 256 --testing_dataset ingca_testing --validation_dataset 2016
+wait
+
+# Train model
+python train.py --data_path /scratch/m23csa015/DIBCOSETS_INGCA/DIBCOSETS_ingca/ --batch_size 32 --vit_patch_size 16 --epochs 1 --split_size 256 --validation_dataset 2016
+wait
+
+# Inference
+python inference.py --data_path /scratch/m23csa015/INGCA/INGCA_IMAGES/ --model_weights_path /csehome/m23csa015/T2T-BinFormer/9_ingca_model/model_116_2016base_256_16.pt --batch_size 16 --vit_patch_size 16 --split_size 256 --testing_dataset raw_images
+wait
+
+# Visualize binarized patches
+python visualize.py --data_path /scratch/m23csa015/INGCA/INGCA_IMAGES/ --model_weights_path /csehome/m23csa015/T2T-BinFormer/weights_208imgs/best-model_16_2016base_256_16.pt --batch_size 16 --vit_patch_size 16 --split_size 256 --testing_dataset raw_images
+wait
+
+# Reconstruct full images
+python full_img.py --data_path /scratch/m23csa015/INGCA/INGCA_IMAGES/ --model_weights_path /csehome/m23csa015/T2T-BinFormer/weights_208imgs/best-model_16_2016base_256_16.pt --batch_size 16 --vit_patch_size 16 --split_size 256 --testing_dataset raw_images
+```
+
+---
+
+## 📜 **.gitignore**
+
+The `.gitignore` file excludes the following files and folders from version control:
+
+```plaintext
+# Ignore datasets and large files
+data/
+mY_OWN_DATASET/
+diBCO_OVER_MY_DATASET/
+gt/
+
+# Ignore specific files and directories
+rename.py
+weights_old/
+visbase_256_16/
+cleaned_mtp.sh
+
+# Ignore output and log files
+output.txt
+out.txt
+*.out
+slurm-*.out
+
+# Ignore cache directories
+__pycache__/
+
+# Ignore text files with trial data
+trail_1.txt
+
+# Ignore directories starting with 'visinference_'
+visinference_*/
+```
+
+---
+
