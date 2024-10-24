@@ -25,3 +25,4 @@ trail_1.txt
 
 # Ignore any directories starting with 'visinference_'
 visinference_*/
+*.pt
